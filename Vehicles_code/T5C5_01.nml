@@ -1,0 +1,85 @@
+// --------------------------------------------------------------------------------T5C5_01
+
+// ss=spriteset, sg=spritegroup, sw=switch
+// tmpl_1(szin,csuklo,rakodas,poziciok)
+// tmpl_depo(szin,csuklo)
+
+spriteset(ss_T5C5_01_purchase, "src/T5C5a_01_depo.png")		{tmpl_purchase()}
+//--------------A
+spriteset(ss_T5C5a_01_depo, "src/T5C5a_01_depo.png")		{tmpl_depo()}
+spriteset(ss_T5C51a_01, "src/T5C5a_01_1x_8bpp.png")		{tmpl_1(1)}
+alternative_sprites(ss_T5C51a_01, ZOOM_LEVEL_IN_2X, BIT_DEPTH_8BPP, "src/T5C5a_01_2x_8bpp.png") {tmpl_1(2)}
+alternative_sprites(ss_T5C51a_01, ZOOM_LEVEL_IN_4X, BIT_DEPTH_8BPP, "src/T5C5a_01_4x_8bpp.png") {tmpl_1(4)}
+
+spritegroup sg_T5C51a_01 {	loaded:  [ss_T5C51a_01];	loading: [ss_T5C51a_01];}
+
+switch (FEAT_ROADVEHS, SELF, sg_T5C5a_01_depo, position_in_consist ) {
+    1: ss_toldat;
+    ss_T5C5a_01_depo;
+}
+switch (FEAT_ROADVEHS, SELF, sw_T5C5a_01, position_in_consist ) {
+    1: ss_toldat;
+    sg_T5C51a_01;
+}
+switch(FEAT_ROADVEHS, SELF, sw_T5C5a_01_ss, (extra_callback_info1 & 0x12)) {
+   0x10..0x12: sg_T5C5a_01_depo; // 0x10 Depot GUI, 0x11 Vehicle Details/Refit GUI, 0x12 Vehicle List
+   0x00: sw_T5C5a_01; // 0x00 Vehicle in game
+}
+switch (FEAT_ROADVEHS, SELF, sw_T5C5_01_ss, cargo_subtype) {
+	0: sw_T5C5a_01_ss;
+	CB_RESULT_NO_TEXT;
+}
+switch (FEAT_ROADVEHS, SELF, sw_T5C5_01_articulated, extra_callback_info1) {
+    0..1: item_T5C5_01;
+    CB_RESULT_NO_MORE_ARTICULATED_PARTS;
+}
+switch (FEAT_ROADVEHS, SELF, sw_T5C5_01_capacity, position_in_consist) {
+	1: return 0;
+	return 100;
+}
+switch (FEAT_ROADVEHS, SELF, sw_T5C5_01_length, position_in_consist) {
+	1: return 8;
+    return 7;
+}
+switch (FEAT_ROADVEHS, SELF, sw_T5C5_01_livery_text, cargo_subtype) {
+	0: return string(STR_COLOUR_SCHEME_BUDAPEST);
+	CB_RESULT_NO_TEXT;
+}
+
+
+item(FEAT_ROADVEHS, item_T5C5_01) {
+	property {
+        name:								string(STR_T5C5_01_NAME);
+        climates_available:				bitmask(CLIMATE_TEMPERATE, CLIMATE_ARCTIC, CLIMATE_TROPICAL);
+        introduction_date:				date(1980,02,01);
+        model_life:						20;
+        vehicle_life:						50;
+        reliability_decay:				10;
+        refittable_cargo_classes:		bitmask(CC_PASSENGERS);
+        non_refittable_cargo_classes:	bitmask(CC_PIECE_GOODS, CC_EXPRESS, CC_REFRIGERATED);
+        loading_speed:					39; //3*13
+        cost_factor:						35;
+        running_cost_factor:				40;
+        sprite_id:							SPRITE_ID_NEW_ROADVEH;
+        speed:								65 km/h;
+        misc_flags:						bitmask(ROADVEH_FLAG_2CC, ROADVEH_FLAG_TRAM);
+        refit_cost:						0;
+        running_cost_base:				RUNNING_COST_ROADVEH;
+        power:								180 kW;
+        weight:							19 ton;
+        cargo_capacity:					100;
+		cargo_age_period:					30;
+        sound_effect:						SOUND_ELECTRIC_SPARK;
+    }
+    graphics {
+		default:                 		sw_T5C5_01_ss;
+		purchase:						ss_T5C5_01_purchase;
+		articulated_part:        		sw_T5C5_01_articulated;
+		length:                  		sw_T5C5_01_length;
+		cargo_subtype_text: 			sw_T5C5_01_livery_text;
+		cargo_capacity: 				sw_T5C5_01_capacity;
+		purchase_cargo_capacity:		return 50;
+		additional_text: 				string(STR_T5C5_01_ADAT);
+    }
+}
+// --------------------------------------------------------------------------------T5C5_01 End

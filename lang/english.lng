@@ -1,0 +1,28 @@
+﻿##grflangid 0x01
+# This is the English language file
+
+# GRF name and description definitions	
+STR_GRF_NAME	:HVW Tatra Trams
+STR_GRF_DESC	:{}{LTBLUE}Tatra Trams{}{BLACK}Last update:{WHITE} 2022.03.01 {}{BLACK}Code and model:{GREEN}SosMakaroni{} {COPYRIGHT}2022 SosMakaroni{}{GRAY}License: GPLv2{}{BLACK}Tatra Trams.
+
+STR_PARAM_BUY_NAME	:Purchase cost {RED} Not work{BLACK}
+STR_PARAM_BUY_DESC	:For players who want to choose the purchase cost.
+STR_PARAM_MAINTENANCE_NAME	:Maintenance costs {RED} Not work{BLACK}
+STR_PARAM_MAINTENANCE_DESC	:For players who want to choose the cost of maintenance.
+STR_PARAM_GAME_VERY_EASY	:/4
+STR_PARAM_GAME_EASY	:/2
+STR_PARAM_GAME_NORMAL	:1 {SILVER} By default{BLACK}
+STR_PARAM_GAME_HARD	:x2
+STR_PARAM_GAME_VERY_HARD	:x4
+
+STR_T5C5_01_NAME	:Tatra T5C5
+STR_T5C5_01_ADAT	:{GOLD}----------{}The{BLACK} Tatra T5C5 {GOLD}is a single-car tram built by ČKD Tatra in Prague, between 1978 and 1984, 322 vehicles were supplied to Budapest.{}{BLACK}T5C5{GOLD} differed in many ways to earlier Tatra products, most notably that the vehicle was controlled by a hand lever rather than a foot pedal.{BLACK}{}
+STR_T5C5_02_NAME	:Tatra T5C5 {Double}
+STR_T5C5_02_ADAT	:{GOLD}----------{}The{BLACK} Tatra T5C5 {GOLD}is a single-car tram built by ČKD Tatra in Prague, between 1978 and 1984, 322 vehicles were supplied to Budapest.{}{BLACK}T5C5{GOLD} differed in many ways to earlier Tatra products, most notably that the vehicle was controlled by a hand lever rather than a foot pedal.{BLACK}{}
+STR_T5C5_03_NAME	:Tatra T5C5 {Triple}
+STR_T5C5_03_ADAT	:{GOLD}----------{}The{BLACK} Tatra T5C5 {GOLD}is a single-car tram built by ČKD Tatra in Prague, between 1978 and 1984, 322 vehicles were supplied to Budapest.{}{BLACK}T5C5{GOLD} differed in many ways to earlier Tatra products, most notably that the vehicle was controlled by a hand lever rather than a foot pedal.{BLACK}{}
+
+STR_COLOUR_SCHEME_BUDAPEST	: - Budapest Scheme
+STR_COLOUR_SCHEME_2	: - Color Scheme 2
+STR_COLOUR_SCHEME_3	: - Color Scheme 3
+STR_COLOUR_SCHEME_4	: - Color Scheme 4
