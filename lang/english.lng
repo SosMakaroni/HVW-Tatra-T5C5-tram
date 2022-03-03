@@ -3,7 +3,7 @@
 
 # GRF name and description definitions	
 STR_GRF_NAME	:HVW Tatra Trams
-STR_GRF_DESC	:{}{LTBLUE}Tatra Trams{}{BLACK}Last update:{WHITE} 2022.03.01 {}{BLACK}Code and model:{GREEN}SosMakaroni{} {COPYRIGHT}2022 SosMakaroni{}{GRAY}License: GPLv2{}{BLACK}Tatra Trams.
+STR_GRF_DESC	:{}{LTBLUE}Tatra Trams{}{BLACK}Last update:{WHITE} 2022.03.03 {}{BLACK}Code and model:{GREEN}SosMakaroni{} {COPYRIGHT}2022 SosMakaroni{}{GRAY}License: GPLv2{}{BLACK}Tatra Trams.
 
 STR_PARAM_BUY_NAME	:Purchase cost {RED} Not work{BLACK}
 STR_PARAM_BUY_DESC	:For players who want to choose the purchase cost.
