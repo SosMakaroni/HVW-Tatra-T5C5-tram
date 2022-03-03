@@ -23,6 +23,6 @@ STR_T5C5_03_NAME	:Tatra T5C5 {Triple}
 STR_T5C5_03_ADAT	:{GOLD}----------{}The{BLACK} Tatra T5C5 {GOLD}is a single-car tram built by ČKD Tatra in Prague, between 1978 and 1984, 322 vehicles were supplied to Budapest.{}{BLACK}T5C5{GOLD} differed in many ways to earlier Tatra products, most notably that the vehicle was controlled by a hand lever rather than a foot pedal.{BLACK}{}
 
 STR_COLOUR_SCHEME_BUDAPEST	: - Budapest Scheme
-STR_COLOUR_SCHEME_2	: - Color Scheme 2
+STR_COLOUR_SCHEME_PROTO	: - Prototype Scheme
 STR_COLOUR_SCHEME_3	: - Color Scheme 3
 STR_COLOUR_SCHEME_4	: - Color Scheme 4
