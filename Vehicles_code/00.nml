@@ -5,7 +5,7 @@ grf {
 	version: 10;
 	min_compatible_version: 5722;
 	param 0 {
-        param_build {
+        param_cost_factor {
             type: int;
             name: string(STR_PARAM_BUY_NAME);
             desc: string(STR_PARAM_BUY_DESC);
@@ -22,7 +22,7 @@ grf {
 				}
 			}
 	param 1 {
-		param_maintenance {
+		param_running_cost_factor {
             type: int;
             name: string(STR_PARAM_MAINTENANCE_NAME);
             desc: string(STR_PARAM_MAINTENANCE_DESC);
@@ -41,11 +41,11 @@ grf {
 
 }
 
+parapuco = (param_cost_factor == 1) ? 2 : (param_cost_factor == 2) ? 4 : (param_cost_factor == 3) ? 8 : (param_cost_factor == 4) ? 16 : 1;
+pararuco = (param_running_cost_factor == 1) ? 2 : (param_running_cost_factor == 2) ? 4 : (param_running_cost_factor == 3) ? 8 : (param_running_cost_factor == 4) ? 16 : 1;
+
 template tmpl_purchase() {
-	[0,	0,	100,	16,	-25,-9]}
-	
-template tmpl_depo() {
-	[0,	20,	250,	16,	-15,-10]}
+	[0,	0,	99,	25,	-25,-15]}
 	
 template tmpl_1(z1){
 	[0		*z1,	0,	11	*z1,	49	*z1,	-5	*z1,	-13	*z1,	ANIM]

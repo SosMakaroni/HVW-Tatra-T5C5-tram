@@ -5,7 +5,7 @@ grf {
 	version: 10;
 	min_compatible_version: 5722;
 	param 0 {
-        param_build {
+        param_cost_factor {
             type: int;
             name: string(STR_PARAM_BUY_NAME);
             desc: string(STR_PARAM_BUY_DESC);
@@ -22,7 +22,7 @@ grf {
 				}
 			}
 	param 1 {
-		param_maintenance {
+		param_running_cost_factor {
             type: int;
             name: string(STR_PARAM_MAINTENANCE_NAME);
             desc: string(STR_PARAM_MAINTENANCE_DESC);
@@ -41,11 +41,11 @@ grf {
 
 }
 
+parapuco = (param_cost_factor == 1) ? 2 : (param_cost_factor == 2) ? 4 : (param_cost_factor == 3) ? 8 : (param_cost_factor == 4) ? 16 : 1;
+pararuco = (param_running_cost_factor == 1) ? 2 : (param_running_cost_factor == 2) ? 4 : (param_running_cost_factor == 3) ? 8 : (param_running_cost_factor == 4) ? 16 : 1;
+
 template tmpl_purchase() {
-	[0,	0,	100,	16,	-25,-9]}
-	
-template tmpl_depo() {
-	[0,	20,	250,	16,	-15,-10]}
+	[0,	0,	99,	25,	-25,-15]}
 	
 template tmpl_1(z1){
 	[0		*z1,	0,	11	*z1,	49	*z1,	-5	*z1,	-13	*z1,	ANIM]
@@ -97,12 +97,14 @@ font_glyph (MONO, 0x0143, "src/icons.png") {[10,80,1,1,0,0]}
 // tmpl_1(szin,csuklo,rakodas,poziciok)
 // tmpl_depo(szin,csuklo)
 
-spriteset(ss_T5C5_01_purchase, "src/T5C5a_01_depo.png")		{tmpl_purchase()}
-spriteset(ss_T5C5a_01_depo, "src/T5C5a_01_depo.png")		{tmpl_depo()}
+spriteset(ss_T5C5_01_purchase, "src/T5C5a_01_BUY_8bpp.png")		{tmpl_purchase()}
+spriteset(ss_T5C5_01_P_purchase, "src/T5C5a_01_BUY_P_8bpp.png")		{tmpl_purchase()}
 spriteset(ss_T5C51a_01, "src/T5C5a_01_1x_8bpp.png")		{tmpl_1(1)}
 alternative_sprites(ss_T5C51a_01, ZOOM_LEVEL_IN_2X, BIT_DEPTH_8BPP, "src/T5C5a_01_2x_8bpp.png") {tmpl_1(2)}
 alternative_sprites(ss_T5C51a_01, ZOOM_LEVEL_IN_4X, BIT_DEPTH_8BPP, "src/T5C5a_01_4x_8bpp.png") {tmpl_1(4)}
-spriteset(ss_T5C5proto_01_depo, "src/T5C5proto_01_depo.png")		{tmpl_depo()}
+spriteset(ss_T5C51a_01_PUP, "src/T5C5a_01_PUP_1x_8bpp.png")		{tmpl_1(1)}
+alternative_sprites(ss_T5C51a_01_PUP, ZOOM_LEVEL_IN_2X, BIT_DEPTH_8BPP, "src/T5C5a_01_PUP_2x_8bpp.png") {tmpl_1(2)}
+alternative_sprites(ss_T5C51a_01_PUP, ZOOM_LEVEL_IN_4X, BIT_DEPTH_8BPP, "src/T5C5a_01_PUP_4x_8bpp.png") {tmpl_1(4)}
 spriteset(ss_T5C51proto_01, "src/T5C5proto_01_1x_8bpp.png")		{tmpl_1(1)}
 alternative_sprites(ss_T5C51proto_01, ZOOM_LEVEL_IN_2X, BIT_DEPTH_8BPP, "src/T5C5proto_01_2x_8bpp.png") {tmpl_1(2)}
 alternative_sprites(ss_T5C51proto_01, ZOOM_LEVEL_IN_4X, BIT_DEPTH_8BPP, "src/T5C5proto_01_4x_8bpp.png") {tmpl_1(4)}
@@ -110,33 +112,38 @@ alternative_sprites(ss_T5C51proto_01, ZOOM_LEVEL_IN_4X, BIT_DEPTH_8BPP, "src/T5C
 spritegroup sg_T5C51a_01 {	loaded:  [ss_T5C51a_01];	loading: [ss_T5C51a_01];}
 spritegroup sg_T5C51proto_01 {	loaded:  [ss_T5C51proto_01];	loading: [ss_T5C51proto_01];}
 
-switch (FEAT_ROADVEHS, SELF, sg_T5C5a_01_depo, position_in_consist ) {
-    1: ss_toldat;
-    ss_T5C5a_01_depo;
+switch (FEAT_ROADVEHS, SELF, swg_T5C5_01_purchase, [
+    STORE_TEMP((getbits(extra_callback_info1, 8, 8) < 1 ? CB_FLAG_MORE_SPRITES : 0) | PALETTE_USE_DEFAULT, 0x100),
+    getbits(extra_callback_info1, 8, 8)
+    ]) {
+    0: return ss_T5C5_01_purchase;    // Alap modell
+    1: return ss_T5C5_01_P_purchase;    // Pantonograf (le)
+}
+switch (FEAT_ROADVEHS, SELF, sgw_T5C51a_01, [
+    STORE_TEMP((getbits(extra_callback_info1, 8, 8) < 1 ? CB_FLAG_MORE_SPRITES : 0) | PALETTE_USE_DEFAULT, 0x100),
+    getbits(extra_callback_info1, 8, 8)
+    ]) {
+    0: return sg_T5C51a_01;    // Alap modell
+    1: return ss_T5C51a_01_PUP;    // Pantonograf (fel)
+}
+switch (FEAT_ROADVEHS, SELF, sgw_T5C51proto_01, [
+    STORE_TEMP((getbits(extra_callback_info1, 8, 8) < 1 ? CB_FLAG_MORE_SPRITES : 0) | PALETTE_USE_DEFAULT, 0x100),
+    getbits(extra_callback_info1, 8, 8)
+    ]) {
+    0: return sg_T5C51proto_01;    // Alap modell
+    1: return ss_T5C51a_01_PUP;    // Pantonograf (fel)
 }
 switch (FEAT_ROADVEHS, SELF, sw_T5C5a_01, position_in_consist ) {
     1: ss_toldat;
-    sg_T5C51a_01;
-}
-switch(FEAT_ROADVEHS, SELF, sw_T5C5a_01_ss, (extra_callback_info1 & 0x12)) {
-   0x10..0x12: sg_T5C5a_01_depo; // 0x10 Depot GUI, 0x11 Vehicle Details/Refit GUI, 0x12 Vehicle List
-   0x00: sw_T5C5a_01; // 0x00 Vehicle in game
-}
-switch (FEAT_ROADVEHS, SELF, sg_T5C5proto_01_depo, position_in_consist ) {
-    1: ss_toldat;
-    ss_T5C5proto_01_depo;
+    sgw_T5C51a_01;
 }
 switch (FEAT_ROADVEHS, SELF, sw_T5C5proto_01, position_in_consist ) {
     1: ss_toldat;
-    sg_T5C51proto_01;
-}
-switch(FEAT_ROADVEHS, SELF, sw_T5C5proto_01_ss, (extra_callback_info1 & 0x12)) {
-   0x10..0x12: sg_T5C5proto_01_depo; // 0x10 Depot GUI, 0x11 Vehicle Details/Refit GUI, 0x12 Vehicle List
-   0x00: sw_T5C5proto_01; // 0x00 Vehicle in game
+    sgw_T5C51proto_01;
 }
 switch (FEAT_ROADVEHS, SELF, sw_T5C5_01_ss, cargo_subtype) {
-	0: sw_T5C5a_01_ss;
-	1: sw_T5C5proto_01_ss;
+	0: sw_T5C5a_01;
+	1: sw_T5C5proto_01;
 	CB_RESULT_NO_TEXT;
 }
 switch (FEAT_ROADVEHS, SELF, sw_T5C5_01_articulated, extra_callback_info1) {
@@ -169,11 +176,9 @@ item(FEAT_ROADVEHS, item_T5C5_01) {
         refittable_cargo_classes:		bitmask(CC_PASSENGERS);
         non_refittable_cargo_classes:	bitmask(CC_PIECE_GOODS, CC_EXPRESS, CC_REFRIGERATED);
         loading_speed:					39; //3*13
-        cost_factor:						35;
-        running_cost_factor:				40;
         sprite_id:							SPRITE_ID_NEW_ROADVEH;
         speed:								65 km/h;
-        misc_flags:						bitmask(ROADVEH_FLAG_2CC, ROADVEH_FLAG_TRAM);
+        misc_flags:						bitmask(ROADVEH_FLAG_2CC, ROADVEH_FLAG_TRAM, ROADVEH_FLAG_SPRITE_STACK);
         refit_cost:						0;
         running_cost_base:				RUNNING_COST_ROADVEH;
         power:								180 kW;
@@ -184,12 +189,14 @@ item(FEAT_ROADVEHS, item_T5C5_01) {
     }
     graphics {
 		default:                 		sw_T5C5_01_ss;
-		purchase:						ss_T5C5_01_purchase;
+		purchase:						swg_T5C5_01_purchase;
 		articulated_part:        		sw_T5C5_01_articulated;
 		length:                  		sw_T5C5_01_length;
 		cargo_subtype_text: 			sw_T5C5_01_livery_text;
 		cargo_capacity: 				sw_T5C5_01_capacity;
 		purchase_cargo_capacity:		return 50;
+		cost_factor:					35 * parapuco;
+		running_cost_factor:			40 * pararuco;
 		additional_text: 				string(STR_T5C5_01_ADAT);
     }
 }
@@ -200,35 +207,54 @@ item(FEAT_ROADVEHS, item_T5C5_01) {
 // tmpl_1(szin,csuklo,rakodas,poziciok)
 // tmpl_depo(szin,csuklo)
 
-spriteset(ss_T5C5_02_purchase, "src/T5C5a_02_depo.png")		{tmpl_purchase()}
-//--------------A
-spriteset(ss_T5C5a_02_depo, "src/T5C5a_02_depo.png")		{tmpl_depo()}
+spriteset(ss_T5C5_02_purchase, "src/T5C5a_02_BUY_8bpp.png")		{tmpl_purchase()}
+spriteset(ss_T5C5_02_P_purchase, "src/T5C5a_02_BUY_P_8bpp.png")		{tmpl_purchase()}
 spriteset(ss_T5C52a_01, "src/T5C5a_01_1x_8bpp.png")		{tmpl_1(1)}
-spriteset(ss_T5C52a_02, "src/T5C5a_02_1x_8bpp.png")		{tmpl_1(1)}
 alternative_sprites(ss_T5C52a_01, ZOOM_LEVEL_IN_2X, BIT_DEPTH_8BPP, "src/T5C5a_01_2x_8bpp.png") {tmpl_1(2)}
-alternative_sprites(ss_T5C52a_02, ZOOM_LEVEL_IN_2X, BIT_DEPTH_8BPP, "src/T5C5a_02_2x_8bpp.png") {tmpl_1(2)}
 alternative_sprites(ss_T5C52a_01, ZOOM_LEVEL_IN_4X, BIT_DEPTH_8BPP, "src/T5C5a_01_4x_8bpp.png") {tmpl_1(4)}
+spriteset(ss_T5C52a_01_PUP, "src/T5C5a_01_PUP_1x_8bpp.png")		{tmpl_1(1)}
+alternative_sprites(ss_T5C52a_01_PUP, ZOOM_LEVEL_IN_2X, BIT_DEPTH_8BPP, "src/T5C5a_01_PUP_2x_8bpp.png") {tmpl_1(2)}
+alternative_sprites(ss_T5C52a_01_PUP, ZOOM_LEVEL_IN_4X, BIT_DEPTH_8BPP, "src/T5C5a_01_PUP_4x_8bpp.png") {tmpl_1(4)}
+spriteset(ss_T5C52a_02, "src/T5C5a_02_1x_8bpp.png")		{tmpl_1(1)}
+alternative_sprites(ss_T5C52a_02, ZOOM_LEVEL_IN_2X, BIT_DEPTH_8BPP, "src/T5C5a_02_2x_8bpp.png") {tmpl_1(2)}
 alternative_sprites(ss_T5C52a_02, ZOOM_LEVEL_IN_4X, BIT_DEPTH_8BPP, "src/T5C5a_02_4x_8bpp.png") {tmpl_1(4)}
+spriteset(ss_T5C52a_02_PDO, "src/T5C5a_02_PDO_1x_8bpp.png")		{tmpl_1(1)}
+alternative_sprites(ss_T5C52a_02_PDO, ZOOM_LEVEL_IN_2X, BIT_DEPTH_8BPP, "src/T5C5a_02_PDO_2x_8bpp.png") {tmpl_1(2)}
+alternative_sprites(ss_T5C52a_02_PDO, ZOOM_LEVEL_IN_4X, BIT_DEPTH_8BPP, "src/T5C5a_02_PDO_4x_8bpp.png") {tmpl_1(4)}
 
 spritegroup sg_T5C52a_01 {	loaded:  [ss_T5C52a_01];	loading: [ss_T5C52a_01];}
 spritegroup sg_T5C52a_02 {	loaded:  [ss_T5C52a_02];	loading: [ss_T5C52a_02];}
 
-switch (FEAT_ROADVEHS, SELF, sg_T5C5a_02_depo, position_in_consist ) {
-    1..3: ss_toldat;
-    ss_T5C5a_02_depo;
+switch (FEAT_ROADVEHS, SELF, swg_T5C5_02_purchase, [
+    STORE_TEMP((getbits(extra_callback_info1, 8, 8) < 1 ? CB_FLAG_MORE_SPRITES : 0) | PALETTE_USE_DEFAULT, 0x100),
+    getbits(extra_callback_info1, 8, 8)
+    ]) {
+    0: return ss_T5C5_02_purchase;    // Alap modell
+    1: return ss_T5C5_02_P_purchase;    // Pantonograf (le)
 }
+switch (FEAT_ROADVEHS, SELF, sgw_T5C52a_01, [
+    STORE_TEMP((getbits(extra_callback_info1, 8, 8) < 1 ? CB_FLAG_MORE_SPRITES : 0) | PALETTE_USE_DEFAULT, 0x100),
+    getbits(extra_callback_info1, 8, 8)
+    ]) {
+    0: return sg_T5C52a_01;    // Alap modell
+    1: return ss_T5C52a_01_PUP;    // Pantonograf (fel)
+}
+switch (FEAT_ROADVEHS, SELF, sgw_T5C52a_02, [
+    STORE_TEMP((getbits(extra_callback_info1, 8, 8) < 1 ? CB_FLAG_MORE_SPRITES : 0) | PALETTE_USE_DEFAULT, 0x100),
+    getbits(extra_callback_info1, 8, 8)
+    ]) {
+    0: return sg_T5C52a_02;    // Alap modell
+    1: return ss_T5C52a_02_PDO;    // Pantonograf (le)
+}
+
 switch (FEAT_ROADVEHS, SELF, sw_T5C5a_02, position_in_consist ) {
     1: ss_toldat;
-	2: sg_T5C52a_02;
+	2: sgw_T5C52a_02;
 	3: ss_toldat;
-    sg_T5C52a_01;
-}
-switch(FEAT_ROADVEHS, SELF, sw_T5C5a_02_ss, (extra_callback_info1 & 0x12)) {
-   0x10..0x12: sg_T5C5a_02_depo; // 0x10 Depot GUI, 0x11 Vehicle Details/Refit GUI, 0x12 Vehicle List
-   0x00: sw_T5C5a_02; // 0x00 Vehicle in game
+    sgw_T5C52a_01;
 }
 switch (FEAT_ROADVEHS, SELF, sw_T5C5_02_ss, cargo_subtype) {
-	0: sw_T5C5a_02_ss;
+	0: sw_T5C5a_02;
 	CB_RESULT_NO_TEXT;
 }
 switch (FEAT_ROADVEHS, SELF, sw_T5C5_02_articulated, extra_callback_info1) {
@@ -264,11 +290,9 @@ item(FEAT_ROADVEHS, item_T5C5_02) {
         refittable_cargo_classes:		bitmask(CC_PASSENGERS);
         non_refittable_cargo_classes:	bitmask(CC_PIECE_GOODS, CC_EXPRESS, CC_REFRIGERATED);
         loading_speed:					78; //6*13
-        cost_factor:						70;
-        running_cost_factor:				78;
         sprite_id:							SPRITE_ID_NEW_ROADVEH;
         speed:								65 km/h;
-        misc_flags:						bitmask(ROADVEH_FLAG_2CC, ROADVEH_FLAG_TRAM);
+        misc_flags:						bitmask(ROADVEH_FLAG_2CC, ROADVEH_FLAG_TRAM, ROADVEH_FLAG_SPRITE_STACK);
         refit_cost:						0;
         running_cost_base:				RUNNING_COST_ROADVEH;
         power:								360 kW;
@@ -279,12 +303,14 @@ item(FEAT_ROADVEHS, item_T5C5_02) {
     }
     graphics {
 		default:                 		sw_T5C5_02_ss;
-		purchase:						ss_T5C5_02_purchase;
+		purchase:						swg_T5C5_02_purchase;
 		articulated_part:        		sw_T5C5_02_articulated;
 		length:                  		sw_T5C5_02_length;
 		cargo_subtype_text: 			sw_T5C5_02_livery_text;
 		cargo_capacity: 				sw_T5C5_02_capacity;
 		purchase_cargo_capacity:		return 50;
+		cost_factor:					70 * parapuco;
+		running_cost_factor:			78 * pararuco;
 		additional_text: 				string(STR_T5C5_02_ADAT);
     }
 }
@@ -295,42 +321,70 @@ item(FEAT_ROADVEHS, item_T5C5_02) {
 // tmpl_1(szin,csuklo,rakodas,poziciok)
 // tmpl_depo(szin,csuklo)
 
-spriteset(ss_T5C5_03_purchase, "src/T5C5a_03_depo.png")		{tmpl_purchase()}
-//--------------A
-spriteset(ss_T5C5a_03_depo, "src/T5C5a_03_depo.png")		{tmpl_depo()}
+spriteset(ss_T5C5_03_purchase, "src/T5C5a_02_BUY_8bpp.png")		{tmpl_purchase()}
+spriteset(ss_T5C5_03_P_purchase, "src/T5C5a_02_BUY_P_8bpp.png")		{tmpl_purchase()}
 spriteset(ss_T5C53a_01, "src/T5C5a_01_1x_8bpp.png")		{tmpl_1(1)}
-spriteset(ss_T5C53a_02, "src/T5C5a_02_1x_8bpp.png")		{tmpl_1(1)}
-spriteset(ss_T5C53a_03, "src/T5C5a_03_1x_8bpp.png")		{tmpl_1(1)}
 alternative_sprites(ss_T5C53a_01, ZOOM_LEVEL_IN_2X, BIT_DEPTH_8BPP, "src/T5C5a_01_2x_8bpp.png") {tmpl_1(2)}
-alternative_sprites(ss_T5C53a_02, ZOOM_LEVEL_IN_2X, BIT_DEPTH_8BPP, "src/T5C5a_02_2x_8bpp.png") {tmpl_1(2)}
-alternative_sprites(ss_T5C53a_03, ZOOM_LEVEL_IN_2X, BIT_DEPTH_8BPP, "src/T5C5a_03_2x_8bpp.png") {tmpl_1(2)}
 alternative_sprites(ss_T5C53a_01, ZOOM_LEVEL_IN_4X, BIT_DEPTH_8BPP, "src/T5C5a_01_4x_8bpp.png") {tmpl_1(4)}
+spriteset(ss_T5C53a_01_PUP, "src/T5C5a_01_PUP_1x_8bpp.png")		{tmpl_1(1)}
+alternative_sprites(ss_T5C53a_01_PUP, ZOOM_LEVEL_IN_2X, BIT_DEPTH_8BPP, "src/T5C5a_01_PUP_2x_8bpp.png") {tmpl_1(2)}
+alternative_sprites(ss_T5C53a_01_PUP, ZOOM_LEVEL_IN_4X, BIT_DEPTH_8BPP, "src/T5C5a_01_PUP_4x_8bpp.png") {tmpl_1(4)}
+spriteset(ss_T5C53a_02, "src/T5C5a_02_1x_8bpp.png")		{tmpl_1(1)}
+alternative_sprites(ss_T5C53a_02, ZOOM_LEVEL_IN_2X, BIT_DEPTH_8BPP, "src/T5C5a_02_2x_8bpp.png") {tmpl_1(2)}
 alternative_sprites(ss_T5C53a_02, ZOOM_LEVEL_IN_4X, BIT_DEPTH_8BPP, "src/T5C5a_02_4x_8bpp.png") {tmpl_1(4)}
+spriteset(ss_T5C53a_02_PDO, "src/T5C5a_02_PDO_1x_8bpp.png")		{tmpl_1(1)}
+alternative_sprites(ss_T5C53a_02_PDO, ZOOM_LEVEL_IN_2X, BIT_DEPTH_8BPP, "src/T5C5a_02_PDO_2x_8bpp.png") {tmpl_1(2)}
+alternative_sprites(ss_T5C53a_02_PDO, ZOOM_LEVEL_IN_4X, BIT_DEPTH_8BPP, "src/T5C5a_02_PDO_4x_8bpp.png") {tmpl_1(4)}
+spriteset(ss_T5C53a_03, "src/T5C5a_03_1x_8bpp.png")		{tmpl_1(1)}
+alternative_sprites(ss_T5C53a_03, ZOOM_LEVEL_IN_2X, BIT_DEPTH_8BPP, "src/T5C5a_03_2x_8bpp.png") {tmpl_1(2)}
 alternative_sprites(ss_T5C53a_03, ZOOM_LEVEL_IN_4X, BIT_DEPTH_8BPP, "src/T5C5a_03_4x_8bpp.png") {tmpl_1(4)}
+spriteset(ss_T5C53a_03_PUP, "src/T5C5a_03_PUP_1x_8bpp.png")		{tmpl_1(1)}
+alternative_sprites(ss_T5C53a_03_PUP, ZOOM_LEVEL_IN_2X, BIT_DEPTH_8BPP, "src/T5C5a_03_PUP_2x_8bpp.png") {tmpl_1(2)}
+alternative_sprites(ss_T5C53a_03_PUP, ZOOM_LEVEL_IN_4X, BIT_DEPTH_8BPP, "src/T5C5a_03_PUP_4x_8bpp.png") {tmpl_1(4)}
 
 spritegroup sg_T5C53a_01 {	loaded:  [ss_T5C53a_01];	loading: [ss_T5C53a_01];}
 spritegroup sg_T5C53a_02 {	loaded:  [ss_T5C53a_02];	loading: [ss_T5C53a_02];}
 spritegroup sg_T5C53a_03 {	loaded:  [ss_T5C53a_03];	loading: [ss_T5C53a_03];}
 
-switch (FEAT_ROADVEHS, SELF, sg_T5C5a_03_depo, position_in_consist ) {
-    1..5: ss_toldat;
-    ss_T5C5a_03_depo;
+switch (FEAT_ROADVEHS, SELF, swg_T5C5_03_purchase, [
+    STORE_TEMP((getbits(extra_callback_info1, 8, 8) < 1 ? CB_FLAG_MORE_SPRITES : 0) | PALETTE_USE_DEFAULT, 0x100),
+    getbits(extra_callback_info1, 8, 8)
+    ]) {
+    0: return ss_T5C5_03_purchase;    // Alap modell
+    1: return ss_T5C5_03_P_purchase;    // Pantonograf (le)
 }
-switch (FEAT_ROADVEHS, SELF, sw_T5C5a_03, position_in_consist ) {
-    1: ss_toldat;
-	2: sg_T5C53a_02;
-	3: ss_toldat;
-	4: sg_T5C53a_03;
-	5: ss_toldat;
-    sg_T5C53a_01;
+switch (FEAT_ROADVEHS, SELF, sgw_T5C53a_01, [
+    STORE_TEMP((getbits(extra_callback_info1, 8, 8) < 1 ? CB_FLAG_MORE_SPRITES : 0) | PALETTE_USE_DEFAULT, 0x100),
+    getbits(extra_callback_info1, 8, 8)
+    ]) {
+    0: return sg_T5C53a_01;    // Alap modell
+    1: return ss_T5C53a_01_PUP;    // Pantonograf (fel)
 }
-switch(FEAT_ROADVEHS, SELF, sw_T5C5a_03_ss, (extra_callback_info1 & 0x12)) {
-   0x10..0x12: sg_T5C5a_03_depo; // 0x10 Depot GUI, 0x11 Vehicle Details/Refit GUI, 0x12 Vehicle List
-   0x00: sw_T5C5a_03; // 0x00 Vehicle in game
+switch (FEAT_ROADVEHS, SELF, sgw_T5C53a_02, [
+    STORE_TEMP((getbits(extra_callback_info1, 8, 8) < 1 ? CB_FLAG_MORE_SPRITES : 0) | PALETTE_USE_DEFAULT, 0x100),
+    getbits(extra_callback_info1, 8, 8)
+    ]) {
+    0: return sg_T5C53a_02;    // Alap modell
+    1: return ss_T5C53a_02_PDO;    // Pantonograf (le)
+}
+switch (FEAT_ROADVEHS, SELF, sgw_T5C53a_03, [
+    STORE_TEMP((getbits(extra_callback_info1, 8, 8) < 1 ? CB_FLAG_MORE_SPRITES : 0) | PALETTE_USE_DEFAULT, 0x100),
+    getbits(extra_callback_info1, 8, 8)
+    ]) {
+    0: return sg_T5C53a_03;    // Alap modell
+    1: return ss_T5C53a_03_PUP;    // Pantonograf (fel)
 }
 
+switch (FEAT_ROADVEHS, SELF, sw_T5C5a_03, position_in_consist ) {
+    1: ss_toldat;
+	2: sgw_T5C53a_02;
+	3: ss_toldat;
+	4: sgw_T5C53a_03;
+	5: ss_toldat;
+    sgw_T5C53a_01;
+}
 switch (FEAT_ROADVEHS, SELF, sw_T5C5_03_ss, cargo_subtype) {
-	0: sw_T5C5a_03_ss;
+	0: sw_T5C5a_03;
 	CB_RESULT_NO_TEXT;
 }
 switch (FEAT_ROADVEHS, SELF, sw_T5C5_03_articulated, extra_callback_info1) {
@@ -370,11 +424,9 @@ item(FEAT_ROADVEHS, item_T5C5_03) {
         refittable_cargo_classes:		bitmask(CC_PASSENGERS);
         non_refittable_cargo_classes:	bitmask(CC_PIECE_GOODS, CC_EXPRESS, CC_REFRIGERATED);
         loading_speed:					117; //9*13
-        cost_factor:						105;
-        running_cost_factor:				126;
         sprite_id:							SPRITE_ID_NEW_ROADVEH;
         speed:								65 km/h;
-        misc_flags:						bitmask(ROADVEH_FLAG_2CC, ROADVEH_FLAG_TRAM);
+        misc_flags:						bitmask(ROADVEH_FLAG_2CC, ROADVEH_FLAG_TRAM, ROADVEH_FLAG_SPRITE_STACK);
         refit_cost:						0;
         running_cost_base:				RUNNING_COST_ROADVEH;
         power:								540 kW;
@@ -385,12 +437,14 @@ item(FEAT_ROADVEHS, item_T5C5_03) {
     }
     graphics {
 		default:                 		sw_T5C5_03_ss;
-		purchase:						ss_T5C5_03_purchase;
+		purchase:						swg_T5C5_03_purchase;
 		articulated_part:        		sw_T5C5_03_articulated;
 		length:                  		sw_T5C5_03_length;
 		cargo_subtype_text: 			sw_T5C5_03_livery_text;
 		cargo_capacity: 				sw_T5C5_03_capacity;
 		purchase_cargo_capacity:		return 50;
+		cost_factor:					105 * parapuco;
+		running_cost_factor:			126 * pararuco;
 		additional_text: 				string(STR_T5C5_03_ADAT);
     }
 }
